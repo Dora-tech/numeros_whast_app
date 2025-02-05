@@ -26,6 +26,7 @@ class _PaginaAgregarNumerosState extends State<PaginaAgregarNumeros> {
   final _maskNumero = MaskTextInputFormatter(mask: '(+51) ### ### ###');
   final _numeroTelefonoController = TextEditingController();
   final _descripcionController = TextEditingController();
+  final _mensajeInicialController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +55,18 @@ class _PaginaAgregarNumerosState extends State<PaginaAgregarNumeros> {
                   RequiredValidator(errorText: 'La descripcion es requerida')
                       .call(valor),
             ),
+            InputPersonalizado(
+              controller: _mensajeInicialController,
+              maxLength: 20,
+              label: 'Mensaje Inicial (Opcional)', // Nuevo input
+            ),
+
             ElevatedButton.icon(
               onPressed: () {
                 _agregarNumero(
                   despuesDeAgregar: (numeroDeTelofono) {
-                    numeroDeTelofono.abrirEnWhatsApp();
+                    final mensajeInicial = _mensajeInicialController.text;
+                    numeroDeTelofono.abrirEnWhatsApp(mensajeInicial: mensajeInicial);
                   },
                 );
               },
@@ -84,6 +92,7 @@ class _PaginaAgregarNumerosState extends State<PaginaAgregarNumeros> {
       final numeroSinFormato = _maskNumero.getUnmaskedText();
       final numeroPlano = numeroSinFormato.cadenaConCodigoDePais();
       final numeroConFormato = _maskNumero.getMaskedText();
+      final mensajeInicial = _mensajeInicialController.text;
       final elNumeroExiste =
           widget.numerosDeTelefono.cast<NumeroDeTelefono?>().firstWhere(
         (numeroTelefono) {
@@ -120,6 +129,7 @@ class _PaginaAgregarNumerosState extends State<PaginaAgregarNumeros> {
 
         _numeroTelefonoController.clear();
         _descripcionController.clear();
+        _mensajeInicialController.clear();
       }
       FocusManager.instance.primaryFocus?.unfocus();
     }
